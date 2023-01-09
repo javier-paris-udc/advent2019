@@ -1,0 +1,24 @@
+cabal-version:      3.6
+name:               advent2019
+version:            0.1.0.0
+
+synopsis:           Solutions to the 2019 advent of code
+
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Javier París
+maintainer:         javier.paris@udc.es
+
+
+common shared_properties
+    build-depends:    base ^>=4.16,
+                      parsec ^>=3.1
+    ghc-options:      -Wall
+    other-modules:    AoC
+    hs-source-dirs:   app
+    default-language: GHC2021
+
+
+executable day01
+    import:           shared_properties
+    main-is:          day01.hs
