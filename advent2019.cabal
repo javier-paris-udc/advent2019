@@ -28,3 +28,8 @@ executable day02
     build-depends:    unordered-containers ^>=0.2,
                       mtl ^>= 2.3
     main-is:          day02.hs
+
+executable day03
+    import:           shared_properties
+    build-depends:    containers ^>=0.6
+    main-is:          day03.hs
