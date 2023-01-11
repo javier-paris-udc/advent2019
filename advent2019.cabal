@@ -25,6 +25,7 @@ executable day01
 
 executable day02
     import:           shared_properties
+    other-modules:    IntCode
     build-depends:    unordered-containers ^>=0.2,
                       mtl ^>= 2.3
     main-is:          day02.hs
