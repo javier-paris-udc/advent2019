@@ -38,3 +38,10 @@ executable day03
 executable day04
     import:           shared_properties
     main-is:          day04.hs
+
+executable day05
+    import:           shared_properties
+    other-modules:    IntCode
+    build-depends:    unordered-containers ^>=0.2,
+                      mtl ^>=2.3
+    main-is:          day05.hs
