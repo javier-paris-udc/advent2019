@@ -61,3 +61,8 @@ executable day08
     import:           shared_properties
     build-depends:    array ^>=0.5
     main-is:          day08.hs
+
+executable day09
+    import:           shared_properties,
+                      intcode
+    main-is:          day09.hs
