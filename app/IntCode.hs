@@ -1,13 +1,19 @@
 {-# LANGUAGE RecordWildCards #-}
-module IntCode (IntCode,
-                intCodeP,
-                run,
-                runWithIO)
+module IntCode (continue
+               ,getOutput
+               ,halted
+               ,IntCode
+               ,intCodeP
+               ,IntComputer
+               ,run
+               ,runWithIO
+               ,runState
+               ,MachineSt (..))
 where
 
 
 import           AoC                 (commaSepP, intP)
-import           Control.Monad.State (State, execState, get, put)
+import           Control.Monad.State (State, execState, get, put, modify)
 import           Data.HashMap.Strict (HashMap, (!))
 import qualified Data.HashMap.Strict as Map
 import           Data.List           (unfoldr)
@@ -16,17 +22,27 @@ import           Text.Parsec.String  (Parser)
 
 
 
-type IntCode = HashMap Int Int
-type Mode    = State St Int
-type Params  = [Mode]
-data St = St {mem    :: IntCode
-             ,ip     :: Int
-             ,input  :: [Int]
-             ,output :: [Int]}
-          deriving (Show, Eq)
+type IntCode     = HashMap Int Int
+type Mode        = State IntComputer Int
+type Params      = [Mode]
+data MachineSt   = Halt | InputWait | Running deriving (Show, Eq)
+data IntComputer = St {mem    :: IntCode
+                      ,ip     :: Int
+                      ,input  :: [Int]
+                      ,output :: [Int]
+                      ,state  :: MachineSt }
+                   deriving (Show, Eq)
 
 
-opCodes :: HashMap Int (Params -> State St ())
+getOutput :: IntComputer -> [Int]
+getOutput = output
+
+
+halted :: IntComputer -> Bool
+halted = (==Halt) . state
+
+
+opCodes :: HashMap Int (Params -> State IntComputer ())
 opCodes = Map.fromList [(1,  add)
                        ,(2,  prod)
                        ,(3,  doInput)
@@ -43,23 +59,23 @@ modeMap = Map.fromList [(0, positionMode)
                        ,(1, immediateMode)]
 
 
-immediateMode :: Int -> State St Int
+immediateMode :: Int -> State IntComputer Int
 immediateMode pos = do
     St { .. } <- get
     return $ mem ! (ip + pos)
 
 
-positionMode :: Int -> State St Int
+positionMode :: Int -> State IntComputer Int
 positionMode pos = do
     St { .. } <- get
     return $ mem ! (mem ! (ip + pos))
 
 
-end :: Params -> State St ()
-end = const $ return ()
+end :: Params -> State IntComputer ()
+end = const $ modify (\st -> st { state = Halt })
 
 
-equals :: Params -> State St ()
+equals :: Params -> State IntComputer ()
 equals params = do
     St { .. } <- get
     val1      <- params !! 0
@@ -70,7 +86,7 @@ equals params = do
     execIntCode
 
 
-less :: Params -> State St ()
+less :: Params -> State IntComputer ()
 less params = do
     St { .. } <- get
     val1      <- params !! 0
@@ -82,7 +98,7 @@ less params = do
 
 
 
-jmpFalse :: Params -> State St ()
+jmpFalse :: Params -> State IntComputer ()
 jmpFalse params = do
     St { .. } <- get
     bool      <- params !! 0
@@ -92,7 +108,7 @@ jmpFalse params = do
     execIntCode
 
 
-jmpTrue :: Params -> State St ()
+jmpTrue :: Params -> State IntComputer ()
 jmpTrue params = do
     St { .. } <- get
     bool      <- params !! 0
@@ -102,7 +118,7 @@ jmpTrue params = do
     execIntCode
 
 
-biop :: (Int -> Int -> Int) -> Params -> State St ()
+biop :: (Int -> Int -> Int) -> Params -> State IntComputer ()
 biop op params = do
     St { .. } <- get
     par1      <- params !! 0
@@ -112,25 +128,26 @@ biop op params = do
     execIntCode
 
 
-prod :: Params -> State St ()
+prod :: Params -> State IntComputer ()
 prod = biop (*)
 
 
-add :: Params -> State St ()
+add :: Params -> State IntComputer ()
 add = biop (+)
 
 
-doInput :: Params -> State St ()
+doInput :: Params -> State IntComputer ()
 doInput _ = do
     St { .. } <- get
     let dst = mem ! (ip + 1)
     case input of
-        []        -> error "inifinite list is empty, go figure"
-        (i0 : is) -> put St { mem = Map.insert dst i0 mem, input = is, ip = ip + 2, .. }
-    execIntCode
+        []        -> put St { state = InputWait, .. }
+        (i0 : is) -> do
+            put St { mem = Map.insert dst i0 mem, input = is, ip = ip + 2, .. }
+            execIntCode
 
 
-doOutput :: Params -> State St ()
+doOutput :: Params -> State IntComputer ()
 doOutput params = do
     St { .. } <- get
     val       <- params !! 0
@@ -144,7 +161,7 @@ parseModes modeCodes =
     in zipWith (\f param -> f param) funs [1 ..]
 
 
-execIntCode :: State St ()
+execIntCode :: State IntComputer ()
 execIntCode = do
     St { .. } <- get
     let control = mem ! ip
@@ -153,18 +170,35 @@ execIntCode = do
     opCodes ! opCode $ modes
 
 
+runState :: [Int] -> IntCode -> IntComputer
+runState inputL code = execState execIntCode state0
+  where
+    state0 = St {mem    = code
+                ,ip     = 0
+                ,input  = inputL
+                ,output = []
+                ,state  = Running}
+
+
+continue :: [Int] -> IntComputer -> IntComputer
+continue inp st = execState execIntCode st { input = inp }
+
+
 runWithIO :: [Int] -> IntCode -> (IntCode, [Int])
 runWithIO inputL code = (mem finalState, reverse $ output finalState)
   where
     state0     = St {mem    = code
                     ,ip     = 0
                     ,input  = inputL
-                    ,output = []}
+                    ,output = []
+                    ,state  = Running}
     finalState = execState execIntCode state0
 
 
 run :: IntCode -> IntCode
-run code = mem $ execState execIntCode St { mem = code, ip = 0, input = [], output = [] }
+run code = mem $ execState execIntCode state0
+  where
+    state0 = St { mem = code, ip = 0, input = [], output = [], state = Running }
 
 
 intCodeP :: Parser (HashMap Int Int)
