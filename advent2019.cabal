@@ -66,3 +66,9 @@ executable day09
     import:           shared_properties,
                       intcode
     main-is:          day09.hs
+
+executable day10
+    import:           shared_properties
+    build-depends:    unordered-containers ^>=0.2,
+                      bifunctors ^>=5.5
+    main-is:          day10.hs
