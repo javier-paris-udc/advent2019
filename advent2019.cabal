@@ -77,3 +77,9 @@ executable day11
     import:           shared_properties,
                       intcode
     main-is:          day11.hs
+
+executable day12
+    import:           shared_properties
+    build-depends:    extra ^>= 1.7,
+                      unordered-containers ^>= 0.2
+    main-is:          day12.hs
