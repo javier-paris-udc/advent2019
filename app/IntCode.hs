@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 module IntCode (continue
+               ,emptyOutput
                ,getOutput
                ,halted
                ,IntCode
@@ -225,6 +226,10 @@ runWithIO inputL code = (mem finalState, reverse $ output finalState)
                     ,state   = Running
                     ,relBase = 0}
     finalState = execState execIntCode state0
+
+
+emptyOutput :: IntComputer -> IntComputer
+emptyOutput comp = comp { output = [] }
 
 
 run :: IntCode -> IntCode
