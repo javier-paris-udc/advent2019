@@ -38,7 +38,7 @@ data IntComputer = St {mem     :: IntCode
 
 
 getOutput :: IntComputer -> [Int]
-getOutput = output
+getOutput = reverse . output
 
 
 halted :: IntComputer -> Bool
