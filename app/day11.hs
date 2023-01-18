@@ -41,8 +41,8 @@ robot comp dir coord grid
     | halted comp = grid
     | otherwise   =
         let newComp        = continue [color] comp
-            turnDir        = getOutput newComp !! 0
-            col            = getOutput newComp !! 1
+            turnDir        = getOutput newComp !! 1
+            col            = getOutput newComp !! 0
             newDir         = turn turnDir dir
         in robot (emptyOutput newComp)
                  newDir

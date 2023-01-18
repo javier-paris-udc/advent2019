@@ -20,10 +20,10 @@ runFeedBack code phases = repeatRounds machines 0
         | otherwise    =
             let v     = fromJust mv
                 newSt = continue [v] mach
-            in (Just $ head (getOutput newSt), newSt)
+            in (Just $ last (getOutput newSt), newSt)
 
     repeatRounds ms v
-        | halted (ms !! 4) = head $ getOutput (ms !! 4)
+        | halted (ms !! 4) = last $ getOutput (ms !! 4)
         | otherwise        =
             case doRound v ms of
                 (Nothing, _)     -> error "Should be at end state"
