@@ -99,3 +99,7 @@ executable day15
     import:           shared_properties,
                       intcode
     main-is:          day15.hs
+
+executable day16
+    import:           shared_properties
+    main-is:          day16.hs
