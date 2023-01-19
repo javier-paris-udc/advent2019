@@ -94,3 +94,8 @@ executable day14
     import:           shared_properties
     build-depends:    unordered-containers ^>=0.2
     main-is:          day14.hs
+
+executable day15
+    import:           shared_properties,
+                      intcode
+    main-is:          day15.hs
