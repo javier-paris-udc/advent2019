@@ -11,7 +11,7 @@ maintainer:         javier.paris@udc.es
 
 
 common shared_properties
-    build-depends:    base ^>=4.16,
+    build-depends:    base >=4.16,
                       parsec ^>=3.1
     ghc-options:      -Wall
     other-modules:    AoC
@@ -108,3 +108,9 @@ executable day17
     import:           shared_properties,
                       intcode
     main-is:          day17.hs
+
+executable day18
+    import:           shared_properties
+    build-depends:    unordered-containers ^>=0.2,
+                      array >= 0.5
+    main-is:          day18.hs
