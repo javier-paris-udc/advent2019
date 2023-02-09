@@ -114,3 +114,8 @@ executable day18
     build-depends:    unordered-containers ^>=0.2,
                       array >= 0.5
     main-is:          day18.hs
+
+executable day19
+    import:           shared_properties,
+                      intcode
+    main-is:          day19.hs
