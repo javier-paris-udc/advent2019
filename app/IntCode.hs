@@ -167,7 +167,7 @@ less = biop (\x y -> if x < y then 1 else 0)
 doInput :: Params -> State IntComputer ()
 doInput params = do
     St { .. } <- get
-    dst       <- params !! 0
+    dst       <- head params
     case input of
         []        -> put St { state = InputWait, .. }
         (i0 : is) -> do

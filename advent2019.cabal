@@ -128,3 +128,8 @@ executable day20
                       hashable ^>=1.4
     other-modules:    Djistra
     main-is:          day20.hs
+
+executable day21
+    import:           shared_properties,
+                      intcode
+    main-is:          day21.hs
