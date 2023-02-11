@@ -133,3 +133,7 @@ executable day21
     import:           shared_properties,
                       intcode
     main-is:          day21.hs
+
+executable day22
+    import:           shared_properties
+    main-is:          day22.hs
