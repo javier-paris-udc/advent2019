@@ -137,3 +137,14 @@ executable day21
 executable day22
     import:           shared_properties
     main-is:          day22.hs
+
+executable day23
+    import:           shared_properties,
+                      intcode
+    main-is:          day23.hs
+
+executable day24
+    import:           shared_properties
+    build-depends:    array ^>=0.5,
+                      unordered-containers ^>=0.2
+    main-is:          day24.hs
